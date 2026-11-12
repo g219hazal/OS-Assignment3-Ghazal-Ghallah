@@ -32,11 +32,11 @@
 
 | Field | Your Answer |
 |-------|-------------|
-| **Full Name** | [Write your full name here] |
-| **Student ID** | [Write your student ID here] |
-| **University Email** | [yourid]@std.psau.edu.sa |
-| **GitHub Username** | [your-github-username] |
-| **Repository Link** | [Paste your repository link here] |
+| **Full Name** | [Ghazal Ghallah] |
+| **Student ID** | [446051422] |
+| **University Email** | [446051422@std.psau.edu.sa]|
+| **GitHub Username** | [g219hazal] |
+| **Repository Link** | [(https://github.com/g219hazal/OS-Assignment3-Ghazal-Ghallah)]|
  
 ---
 
@@ -132,56 +132,76 @@
 
 ## Your Development Log
 
-### Entry 1 - [Date and Time]
+### Entry 1 - [November 4, 2026, 7:15 PM]
 **What I did**:
-
+Forked the starter repo, set my student ID and ran the original code
 **Details**:
-
+Forked the starter repository and renamed it to OS-Assignment3-Ghazal-Ghallah
+Changed the student ID on line 304 to 446051422 (14 processes, quantum 5000ms, 4 CPUs)
+Ran the original starter: all 4 CPUs picked P1 at the same time, 3 CPUs crashed with IllegalThreadStateException, and the watchdog stopped the program
+Saved the output in a text file for Question 1. Commit: "Set my student ID"
 **Challenges**:
-
+When I saved the file, VS Code formatted the whole file automatically and my student ID moved from line 304 to line 345. Also the first commit failed because
+it asked for user.name and user,emai.
 **Solution**:
-
+ I discarded the changes and saved with "Save without Formatting" (Ctri+K then S). I set git config with my name and my university email
 **Time spent**:
-
+35 minutes
 ---
 
-### Entry 2 - [Date and Time]
+### Entry 2 - [November 4, 2026, 7:50 PM]
 **What I did**:
-
+Feature 1 - protected the ready queue with a ReentrantLock
 **Details**:
-
+Added `import java.util.concurrent.locks.ReentrantLock`
+ Added `queueLock` in ReadyQueue
+ Put lock() / try / finally { unlock() } in add(), poll(), processOf() and snapshot()
+  In poll() I kept the return inside try, the finally still releases the lock
+ After running: every CPU picked a different process (P1, P2, P3, P4), no exception, completed processes became 14/14
+ Context switches (20/24) and service time (72570/82570) were still wrong, this is for Feature 2
+ Commit: "Feature 1: fixed the race on the ready queue using ReentrantLock"
 **Challenges**:
-
+In the starter output P2, P3 and P4 never ran (0 in the summary table) and I did not understand why at first
 **Solution**:
-
+I read poll() again: two CPUs read the same head, then each one removes a different element, so some processes were removed without running
 **Time spent**:
-
+45 minutes
 ---
 
-### Entry 3 - [Date and Time]
+### Entry 3 - [November 11, 2026, 10:05 PM]
 **What I did**:
-
+Feature 2 - protected the shared statistics
 **Details**:
-
+ I chose one lock per counter: contextSwitchLock, completedLock, serviceTimeLock, because the three counters are independent
+ Protected the 3 update methods and the 3 getters with lock() / try / finally
+ Ran it 3 times: context switches 24/24, completed 14/14, service time 82570/82570 every time
+ Busy-waiting polls was still 129 (Feature 3)
+ Commit: "Feature 2: added a lock for each counter in SharedStats"
 **Challenges**:
-
+When I added the finally block, the line was split in the middle and one closing brace was missing. Also Copilot kept showing suggestions while I was typing
 **Solution**:
-
+I used the End key before pressing Enter so the cursor is at the end of the line, fixed the braces, and pressed Esc to ignore the suggestions
 **Time spent**:
-
+55 minutes
 ---
 
-### Entry 4 - [Date and Time]
+### Entry 4 - [November 11, 2026, 11:00 PM]
 **What I did**:
-
+Feature 3 - replaced busy waiting with a counting semaphore
 **Details**:
-
+Added `Semaphore readyCount = new Semaphore(0)` in ReadyQueue (0 because the queue starts empty)
+release() in add() after the queue lock is released
+acquire() in CpuWorker before poll(), outside any lock
+Deleted the polling code (Thread.sleep(20) and the if (thread == null) part)
+When all processes are completed, the CPU calls release(totalCPUs) to wake up the sleeping CPUs, and a CPU that wakes up checks if everything is completed and stops
+Ran it 6 times: all 4 lines ✔, busy-waiting polls = 0, no watchdog
+Commit: "Feature 3: replaced busy waiting with a semaphore"
 **Challenges**:
-
+While deleting the busy waiting code I deleted the line `Thread thread = readyQueue.poll();` by mistake. A grey Copilot sugestion appeared in its place so I thought it was still there, but `thread` had red errors
 **Solution**:
-
+I pressed Esc and typed the line again myself, then the errors disappeared
 **Time spent**:
-
+40 minutes
 ---
 
 ### Entry 5 - [Date and Time]
@@ -240,7 +260,11 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[Incrementing a counter involves three steps (reading, adding, and writing), during which an update could potentially be lost.
+I was surprised to see all four processors reach P1 simultaneously.
+Any code that modifies shared data requires a lock.
+The lock must be released within a `finally` block.
+Using a semaphore allowed the processor to sleep instead of constantly checking, which brought the number down from 647 to 0.]
 
 ## Question 2: What was the most challenging part of this assignment?
 
@@ -248,7 +272,11 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[The trickiest part was the end of the program in Feature 3.
+The processors go to sleep upon calling `acquire`, waiting for a task.
+After the final task, no new tasks will arrive, so they would remain asleep forever.
+The solution is for the last processor to wake them all up by calling `release(totalCPUs)`.
+Once awakened, each processor verifies that everything is complete and then terminates.]
 
 ## Question 3: How did you overcome the challenges you faced?
 
@@ -256,7 +284,11 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[I worked on one function at a time, rather than doing everything at once.
+After implementing each feature, I ran the program and performed a verification.
+I compared the numbers before and after each feature was added.
+I ran it multiple times, as synchronization errors don’t always appear on every run.
+Whenever I didn’t understand something, I referred back to the code and the README, or asked for an explanation.]
 
 ## Question 4: Where can synchronization concepts be applied in real-world applications?
 
@@ -264,19 +296,23 @@
 
 **Your Answer:** *(5-7 sentences)*
 
-[Write your answer here.]
+[Banking: Two transfers from the same account at the same time could cause a balance update to be lost.
+Ticket booking: Two people might book the same seat—much like the 'P1' scenario I mentioned.
+Inventory in online stores must be protected.
+A print queue functions similarly to my queue; the printer waits for tasks rather than constantly checking for them.
+Databases use locks for the very same reason.]
 
 ### Optional: What would you like to learn more about?
 
-[Any topics related to synchronization or operating systems that you're curious about?]
+[I want to learn more about deadlocks—how to detect them and how to avoid them in large scale software.]
 
 ### Optional: How confident do you feel about synchronization concepts now?
 
-[Beginner / Intermediate / Confident. What do you understand well? What needs more practice?]
+[Intermediate. I understand locks and semaphores, but I need more practice with bounded queues and deadlocks.]
 
 ### Optional: Feedback on the assignment
 
-[Any comments? Was it helpful? Too easy or hard? Suggestions?]
+[The assignment was useful because I saw the problem with my own eyes in the output before fixing it. Feature 3 was the most difficult part.]
 
 ---
 
@@ -298,20 +334,27 @@
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[In my first run, all the values ​​were incorrect: there were 18 context switches instead of 24, and 11 completed tasks instead of 14. This happened because multiple CPUs picked up P1 simultaneously, causing P2, P3, and P4 to be lost. Furthermore, after just one feature was enabled, the service time became 72,570 instead of 82,570—meaning two additions of 5000 ms were lost. A similar issue could occur on a real machine, as the operating system might pause a thread between a read and a write operation; however, since this happens rarely, it is difficult to detect.]
 
-Verification block of the **original starter**:
+Verification block of the **original starter**: 
 ```
-[Paste the verification block (or the exception/watchdog message) of the starter here]
+Context switches (quanta executed)     expected 24       observed 18       ✘ MISMATCH
+Completed processes                    expected 14       observed 11       ✘ MISMATCH
+Total service time (ms)                expected 82570    observed 57771    ✘ MISMATCH
+Busy-waiting polls (must be 0)         expected 0        observed 647      ✘ MISMATCH
+WATCHDOG: the simulation did not finish (27 s).
 ```
 
 Verification block of **my final version**:
 ```
-[Paste the verification block of your final version here (all lines ✔)]
+Context switches (quanta executed)     expected 24       observed 24       ✔
+Completed processes                    expected 14       observed 14       ✔
+Total service time (ms)                expected 82570    observed 82570    ✔
+Busy-waiting polls (must be 0)         expected 0        observed 0        ✔
+✔ All shared values are consistent.
 ```
-
 **Explanation of the timeline:**
-[Explain the lost update step by step.]
+[CPU-1 reads `totalServiceTime` = 20,000 and pauses. CPU-2 reads the same value, 20,000. CPU-1 writes 25,000, and CPU-2 also writes 25,000. The result is 25,000 instead of 30,000; thus, an addition has been lost.]
 
 ## Question 2: Critical Sections and Lock Granularity
 
@@ -321,12 +364,16 @@ Verification block of **my final version**:
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[I used a separate lock for each counter because the three counters are independent, updating the time does not need to wait for a context switch update. The trade off is having more locks and more code. The queue has its own distinct lock because it involves different data, using the same lock would cause the queue to stall unnecessarily while the counters are being updated. The `lock()` method ensures mutual exclusion meaning only one thread can be in the critical section at a time. The default lock is "unfair," meaning some threads might end up waiting longer than others, however, since my critical sections are very brief, this is acceptable. If fairness were required, I could use `new ReentrantLock(true)` instead.]
 
 | Critical section (variable / method) | Lock used | Why it needs protection |
 |---|---|---|
 | [e.g., `ReadyQueue.poll()`] | [lock name] | [reason] |
 | [...] | [...] | [...] |
+| `list` and `map`: `add()`, `poll()`, `processOf()`, `snapshot()` | `queueLock` | many CPUs read and change the queue at the same time |
+| `contextSwitchCount`: `incrementContextSwitch()`, `getContextSwitchCount()` | `contextSwitchLock` | read then write, an update can be lost |
+| `completedProcessCount`: `incrementCompletedProcess()`, `getCompletedProcessCount()` | `completedLock` | if an update is lost the CPUs never stop and the watchdog fires |
+| `totalServiceTime`: `addServiceTime()`, `getTotalServiceTime()` | `serviceTimeLock` | read then write, some time can be lost |
 
 ## Question 3: Busy Waiting vs Semaphore
 
@@ -336,7 +383,7 @@ Verification block of **my final version**:
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[In the original code, a CPU that finds the queue empty sleeps for 20ms before checking again, this happened 647 times during my run, which is a waste of processor time. In my implementation, the semaphore value represents the number of processes waiting in the queue. It is initialized to 0 (since the queue starts empty) and becomes 14 after the 14 processes are added in the `main` method. Now, a CPU becomes "blocked" when it calls `acquire()`, so it does not use the processor. Finally, the last CPU calls `release(totalCPUs)` to wake up the sleeping CPUs. If this step were omitted, they would stay asleep forever and the WATCHDOG would stop the program.]
 
 ## Question 4: Classical Problems and Deadlock
 
@@ -347,24 +394,24 @@ Verification block of **my final version**:
 **Your Answer:** *(3-5 sentences)*
 
 **Classical problem and roles**:
-[Name the problem; who is the producer, who is the consumer?]
+[This is a Producer-Consumer (or Bounded Buffer) problem. The "producer" is the `main` function when it initially adds processes, as well as the CPUs when they return a process that has not yet finished. The "consumer" is the CPUs when they take a process. Thus, the CPUs act as both a producer and a consumer.]
 
 **Semaphores for a bounded queue (name and initial value)**:
-[Name the three semaphores and their initial values.]
+[mutex = 1 to protect the queue. full = 0 for the number of processes in the queue. empty = K for the number of empty spaces.]
 
 **Deadlock scenario and prevention**:
-[Describe the scenario and the necessary condition you would break.]
+[If a producer acquires the mutex and then waits on the `empty` semaphore while the queue is full, the consumer will also need that same mutex to remove an item and free up space—resulting in a permanent deadlock. The solution is to break the "Hold and Wait" condition: we wait on the semaphore *before* acquiring the mutex. This is exactly what I did in my code—calling `acquire()` outside of `queueLock`.]
 
 ## Summary
 
 **Key concepts I understood through these questions:**
-1.
-2.
-3.
+1.Race condition: If two threads modify the same variable simultaneously, one update will be lost.
+2.Locking: Ensures only one thread can enter a critical section; the release of the lock should always be placed within a `finally` block.
+3.Semaphore: Allows the CPU to "sleep" until an operation is ready, rather than having it constantly check (poll) for updates.
 
 **Concepts I need to study more:**
-1.
-2.
+1.Fairness in locks, and when to use `ReentrantLock(true)`.
+2.Solving the bounded buffer problem using three semaphores.
 
 ---
 
