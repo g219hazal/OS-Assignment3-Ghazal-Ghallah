@@ -42,7 +42,7 @@
 
 ## 🎥 Video Link
 
-**Video Link**: [Paste your video link here]
+**Video Link**: [(https://drive.google.com/file/d/13iLVAmO7Lcx6G7oXaxUiv9ic6vQyunOj/view?usp=sharing)]
 
 > ⚠️ **WARNING:** The video must be **publicly accessible** ("Anyone with the link can view") on **Google Drive**, **YouTube (Unlisted or Public)** or any other cloud file-sharing system. A private, restricted or broken link counts as a **missing video (-1 mark)**.
 >
@@ -204,43 +204,47 @@ I pressed Esc and typed the line again myself, then the errors disappeared
 40 minutes
 ---
 
-### Entry 5 - [Date and Time]
+### Entry 5 - [November 12, 2026, 10:40 PM]
 **What I did**:
-
+Filled MY_WORK.md: my info, development log 1-4, reflection and technical answers
 **Details**:
-
+I wrote the 4 reflection answers and the 4 technical answers
+I pasted the verification block of the starter and of my final version in Question 1
+I made the table of critical sections and locks in Question 2
+Commit: "Docs: wrote my reflection and answers in MY_WORK"
 **Challenges**:
-
+I pasted some answers in the wrong place, the Question 3 answer went into Question 2 and into the reflection, so I lost them for a moment. Also some placeholder lines stayed inside the code blocks
 **Solution**:
-
+I checked the heading above each answer and put my old answers back, then I deleted the placeholder lines and checked the file with the preview (Ctrl+Shift+V)
 **Time spent**:
-
+1 hour 15 minutes
 ---
 
-### Entry 6 - [Optional - Date and Time]
+### Entry 6 - [November 16, 2026, 7:20 PM]
 **What I did**:
-
+Recorded the demo video and uploaded it
 **Details**:
-
+Recorded the video with Xbox Game Bar (Win+G): my repo, the 3 features, running the code in VS Code, the race condition explanation and my commits
+Uploaded it to Google Drive with "Anyone with the link" and added the link to this file
 **Challenges**:
-
+When I opened VS Code the project folder was not on my computer anymore ("Path does not exist"). Then the Run button did not show
 **Solution**:
-
+I cloned my repo again from GitHub with "Clone Repository". The Run button was missing because of Restricted Mode and Java Lightweight Mode, so I trusted the folder and switched Java to Standard Mode
 **Time spent**:
-
+about 2 hours
 ---
 
 ## Development Log Summary
 
 > 💡 **TIP:** Fill this in **last**, after all entries are written.
 
-**Total time spent on assignment**: [X hours]
+**Total time spent on assignment**: [about 6 hours]
 
-**Most challenging part**:
+**Most challenging part**:Feature 3, stopping the CPUs at the end so they don't wait forever on acquire()
 
-**Most interesting learning**:
+**Most interesting learning**:Seeing the race condition in my own output, the 4 CPUs all picked P1 and 3 processes never ran
 
-**What I would do differently next time**:
+**What I would do differently next time**:Start earlier, and turn off format on save in VS Code from the beginning
 
 ---
 
